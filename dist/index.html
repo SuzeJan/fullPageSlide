@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="ZH-cn">
+
+<head>
+    <meta charset="UTF-8">
+    <title>FullPage插件演示</title>
+    <link rel="stylesheet" type="text/css" href="./node_modules/reset.css/reset.css">
+    <link rel="stylesheet" type="text/css" href="./css/fullpageslide.css">
+</head>
+
+<body>
+    <section id="J-fullPageSlide" class="fullPageSlide">
+        <section class="section-wrapper">
+            <section class="section section1">
+                <h3>This is a page1</h3>
+            </section>
+            <section class="section section2">
+                <h3>This is a page2</h3>
+            </section>
+            <section class="section section3">
+                <h3>This is a page3</h3>
+            </section>
+            <section class="section section4">
+                <h3>This is a page4</h3>
+            </section>
+            <section class="section section5">
+                <h3>This is a page5</h3>
+            </section>
+        </section>
+    </section>
+
+    <script src="./node_modules/jquery/dist/jquery.min.js"></script>
+    <script src="./script/fullpageslide.js"></script>
+    <script>
+        $('#J-fullPageSlide').FullPageSlide({
+            isScrolling: false
+        });
+    </script>
+</body>
+
+</html>

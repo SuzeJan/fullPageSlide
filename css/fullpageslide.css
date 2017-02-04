@@ -1,0 +1,27 @@
+html,
+body {
+  height: 100%;
+}
+.fullPageSlide,
+.section-wrapper,
+.section {
+  height: 100%;
+}
+.fullPageSlide .section {
+  height: 100%;
+}
+.fullPageSlide .section1 {
+  background-color: #c4f2c8;
+}
+.fullPageSlide .section2 {
+  background-color: #e6daf7;
+}
+.fullPageSlide .section3 {
+  background-color: #e7ebc3;
+}
+.fullPageSlide .section4 {
+  background-color: #d8ddf0;
+}
+.fullPageSlide .section5 {
+  background-color: #edd1d1;
+}
