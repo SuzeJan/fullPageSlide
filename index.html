@@ -16,6 +16,7 @@
             <section class="section section3"></section>
             <section class="section section4"></section>
             <section class="section section5"></section>
+            <section class="section section6"></section>
         </section>
     </section>
 
@@ -25,7 +26,14 @@
         $('#J-fullPageSlide').FullPageSlide({
             navMenu: ['个人简历', '专业技能', '工作经历', '项目经验', '联系方式'],
             isScrolling: true,
-            author: '张旭•个人简历'
+            author: '张旭•个人简历',
+            direction: 'vertical',
+            index: 1,
+            duration: 600,
+            easing: 'ease',
+            afterLoad: function(index) {
+                console.log(index);
+            }
         });
     </script>
 </body>
