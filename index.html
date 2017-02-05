@@ -11,21 +11,10 @@
 <body>
     <section id="J-fullPageSlide" class="fullPageSlide">
         <section class="section-wrapper">
-            <section class="section section1">
-                <h3>This is a page1</h3>
-            </section>
-            <section class="section section2">
-                <h3>This is a page2</h3>
-            </section>
-            <section class="section section3">
-                <h3>This is a page3</h3>
-            </section>
-            <section class="section section4">
-                <h3>This is a page4</h3>
-            </section>
-            <section class="section section5">
-                <h3>This is a page5</h3>
-            </section>
+            <section class="section section1"></section>
+            <section class="section section2"></section>
+            <section class="section section3"></section>
+            <section class="section section4"></section>
         </section>
     </section>
 
@@ -33,7 +22,9 @@
     <script src="./script/fullpageslide.js"></script>
     <script>
         $('#J-fullPageSlide').FullPageSlide({
-            isScrolling: false
+            navMenu: ['个人简历', '专业技能', '工作经历', '项目经验', '联系方式'],
+            isScrolling: true,
+            author: '张旭•个人简历'
         });
     </script>
 </body>

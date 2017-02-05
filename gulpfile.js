@@ -5,7 +5,7 @@ var gulp = require('gulp');
 var jshint = require('gulp-jshint');
 // 获取 gulp-less 模块
 var less = require('gulp-less')
-    // 获取gulp-concat js合并模块
+// 获取gulp-concat js合并模块
 var concat = require('gulp-concat');
 // 获取gulp-uglify js压缩模块
 var uglify = require('gulp-uglify');
@@ -39,9 +39,7 @@ gulp.task('auto', function() {
 
 // scripts任务会合并 js/ 目录下得所有得js文件并输出到 dist/ 目录，然后gulp会重命名、压缩合并的文件，也输出到 dist/ 目录。
 gulp.task('scripts', function() {
-    gulp.src('./script/*.js')
-        .pipe(concat('fullpageslide.js'))
-        .pipe(gulp.dest('./dist/script'))
+    gulp.src('./script/fullpageslide.js')
         .pipe(rename('fullpageslide.min.js'))
         .pipe(uglify())
         .pipe(gulp.dest('./dist/script'));

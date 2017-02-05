@@ -1,6 +1,16 @@
 html,
 body {
   height: 100%;
+  font-family: Helvetica Neue, Arial, PingFang SC, Hiragino Sans GB, STHeiti, Microsoft YaHei, WenQuanYi Micro Hei, sans-serif;
+}
+a {
+  color: #fff;
+  text-decoration: none;
+  font-size: 12px;
+  transition: color .25s;
+}
+a:hover {
+  color: #ccc;
 }
 .fullPageSlide,
 .section-wrapper,
@@ -24,4 +34,27 @@ body {
 }
 .fullPageSlide .section5 {
   background-color: #edd1d1;
+}
+.fullPageSlide .section-wrapper .topHeader {
+  height: 52px;
+  line-height: 52px;
+  padding-right: 160px;
+  padding-left: 160px;
+  background-color: #717171;
+}
+.fullPageSlide .section-wrapper .topHeader .author {
+  float: left;
+}
+.fullPageSlide .section-wrapper .topHeader .topNav {
+  float: right;
+  font-size: 0;
+}
+.fullPageSlide .section-wrapper .topHeader .topNav .item {
+  display: inline-block;
+}
+.fullPageSlide .section-wrapper .topHeader .topNav .item > a {
+  display: inline-block;
+}
+.fullPageSlide .section-wrapper .topHeader .topNav .item + .item {
+  margin-left: 20px;
 }
