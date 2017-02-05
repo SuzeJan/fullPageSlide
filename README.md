@@ -4,6 +4,11 @@
 >基本依赖文件，由于所需依赖js都是在node里维护，比如jquery、slimScroll等，需要安装node服务
 
 ## npm install
+```
+<link rel="stylesheet" type="text/css" href="./css/fullpageslide.css">
+<script src="./node_modules/jquery/dist/jquery.min.js"></script>
+<script src="./script/fullpageslide.js"></script>
+```
 
 >基本DOM布局
 
