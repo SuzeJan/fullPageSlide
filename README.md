@@ -18,6 +18,10 @@
     </section>
 </section>
 ```
-ID:J-fullPageSlide为了让插件找到
-----
-Class:fullPageSlide为了让CSS实现基本样式
+ID:J-fullPageSlide,为了让插件找到
+
+Class:fullPageSlide,为了让CSS实现基本样式
+
+Class: section-wrapper,所有屏的包裹层
+
+Class: section,每一屏的类名
