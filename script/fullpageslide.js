@@ -64,6 +64,7 @@
                 this.s_direction = this._disposeDirection();
                 this.s_isScrolling = this.setting.isScrolling;
                 this.s_index = this.setting.index >= 0 && this.setting.index < this._getSectionCount() ? this.setting.index : 0;
+                this.s_active = this.setting.active;
                 this.s_isLoop = this.setting.isLoop;
                 this.s_duration = this.setting.duration;
                 this.s_easing = this.setting.easing;
@@ -94,6 +95,8 @@
                 this._initEvent();
 
                 this._afterScrolling();
+
+                this._setMenuActive();
             },
             //其它功能
 
@@ -148,7 +151,11 @@
                 if (_prefix) {
                     // 如果是在浏览器默认滚动条就用scrollTop和scrollLeft滚动滚动条的方式实现动画
                     if (this.s_isScrolling) {
-                        _this.s_direction ? $('body').animate({scrollTop: sectionPosition.top}, 'slow') : $('body').animate({scrollLeft: sectionPosition.left}, 'slow');
+                        _this.s_direction ? $('body').animate({
+                            scrollTop: sectionPosition.top
+                        }, 'slow') : $('body').animate({
+                            scrollLeft: sectionPosition.left
+                        }, 'slow');
                     } else {
                         // 如果是全屏滚动的方式,则用translate的css3来实现动画
                         var translate = _this.s_direction ? "translateY(-" + sectionPosition.top + "px)" : "translateX(-" + sectionPosition.left + "px)";
@@ -156,6 +163,20 @@
                         _this.d_sectionWrap.css(_prefix + "transform", translate);
                     }
                 }
+            },
+
+            // 设置当前活动的菜单
+            _setMenuActive: function() {
+                    var _this = this;
+                    _this.d_topHeader.find('.topNav .item').removeClass(_this.s_active);
+                    _this.d_topHeader.find('.topNav .item a').css({
+                        color: '#fff'
+                    });
+                    _this.d_topHeader.find('.topNav .item').eq(_this.s_index-1).addClass(_this.s_active);
+                    _this.d_topHeader.find('.topNav .item.'+_this.s_active+' a').css({
+                        color: '#ccc'
+                    });
+
             },
 
             // 获取到section的总数,私有方法
@@ -216,16 +237,17 @@
 
             // 初始化界面事件
             _initEvent: function() {
-                    var _this = this;
+                var _this = this;
 
-                    // 鼠标单击导航菜单,调用动画函数
-                    this.d_sectionWrap.on('click', '.topNav li', function(e) {
-                        e.preventDefault();
-                        console.log(_this.d_topHeader);
-                        _this.d_sectionWrap.find('.topHeader').addClass('topHeader-fixed');
-                        _this.s_index = $(this).index()+1;
-                        _this.scrollAnimate();
-                    })
+                // 鼠标单击导航菜单,调用动画函数
+                this.d_sectionWrap.on('click', '.topNav li', function(e) {
+                    e.preventDefault();
+                    console.log(_this.d_topHeader);
+                    _this.d_sectionWrap.find('.topHeader').addClass('topHeader-fixed');
+                    _this.s_index = $(this).index() + 1;
+                    _this.scrollAnimate();
+                    _this._setMenuActive();
+                })
             },
 
             //滚到某一屏调用的回调函数
@@ -255,15 +277,16 @@
     };
     //对插件定义默认属性值
     $.fn.FullPageSlide.defaults = {
-        navMenu: [], //接收一个数组，定义导航菜单的值，并会自动生成DOM
-        author: '', //接收一个字符串，显示此项目名或者作者，只有在有navmenu的条件下才会生成
-        index: 0, //默认从第1屏开始索引，索引值从0开始计算
-        easing: 'ease', //默认为ease，动画效果[linear、ease、ease-in...]等等css3 transition的运动曲线
-        duration: 500, //默认500，动画执行时间，单位ms
-        direction: 'vertical', //默认垂直滚动，horizontal为水平方向，值[vertical, horizontal]
-        isLoop: false, //默认false，是否循环切换滚动
-        isScrolling: true, //默认true，是否全屏滚动，若为true则浏览器默认的滚动方式
-        isKeyboard: true, //默认true，是否键盘控制切换
+        navMenu: [], //接收一个数组,定义导航菜单的值,并会自动生成DOM
+        author: '', //接收一个字符串,显示此项目名或者作者,只有在有navmenu的条件下才会生成
+        active: 'active', //默认.active,用户可自定义active的类名
+        index: 0, //默认从第1屏开始索引,索引值从0开始计算
+        easing: 'ease', //默认为ease,动画效果[linear、ease、ease-in...]等等css3 transition的运动曲线
+        duration: 500, //默认500,动画执行时间,单位ms
+        direction: 'vertical', //默认垂直滚动,horizontal为水平方向,值[vertical, horizontal]
+        isLoop: false, //默认false,是否循环切换滚动
+        isScrolling: true, //默认true,是否全屏滚动,若为true则浏览器默认的滚动方式
+        isKeyboard: true, //默认true,是否键盘控制切换
         isSlimscroll: false, //当内容超过可视区是否显示滚动条（需要引入slimscroll.js）
         afterLoad: '', //滚动到某一屏时触发的回调函数
         onLeave: '', //离开某一屏时触发的回调函数
