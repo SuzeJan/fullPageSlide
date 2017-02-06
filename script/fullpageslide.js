@@ -53,11 +53,15 @@
             init: function() {
                 var _this = this;
 
-                // 初始化DOM，用d_前缀表示
+                /**
+                 * 初始化DOM，用d_前缀表示
+                 */
                 this.d_sectionWrap = $('#J-fullPageSlide .section-wrapper');
                 this.d_section = $('#J-fullPageSlide .section');
 
-                // 初始化设置，用s_前缀表示
+                /**
+                 * 初始化设置，用s_前缀表示
+                 */
                 this.s_navMenu = this.setting.navMenu;
                 this.s_author = this.setting.author;
                 // this.s_direction是布尔值
@@ -70,6 +74,18 @@
                 this.s_easing = this.setting.easing;
                 this.s_afterLoad = this.setting.afterLoad;
                 this.s_onLeave = this.setting.onLeave;
+
+                /**
+                 * 根据功能需求自定义的变量b_前缀表示
+                 */
+                /**
+                 * 保存每个section的区间,当用户用于浏览器自带的滚动条时,在离开第一屏topHeader应该为顶部固定,当进入第一屏时呢,则让topHeader继续在文档流中
+                 * 之所以不用onLeave()这个回调方法,是因为这个方法是在用户调用FullPageSlide时才会去触发,而我本身是希望这个功能是内置的
+                 * 实现:见_linkageScrolling()方法
+                 * @type {Array}
+                 */
+                this.b_tiggerSection = [];
+                this.b_finshed = true;
 
                 // 渲染导航条
                 this.renderNav();
@@ -167,15 +183,15 @@
 
             // 设置当前活动的菜单
             _setMenuActive: function() {
-                    var _this = this;
-                    _this.d_topHeader.find('.topNav .item').removeClass(_this.s_active);
-                    _this.d_topHeader.find('.topNav .item a').css({
-                        color: '#fff'
-                    });
-                    _this.d_topHeader.find('.topNav .item').eq(_this.s_index-1).addClass(_this.s_active);
-                    _this.d_topHeader.find('.topNav .item.'+_this.s_active+' a').css({
-                        color: '#ccc'
-                    });
+                var _this = this;
+                _this.d_topHeader.find('.topNav .item').removeClass(_this.s_active);
+                _this.d_topHeader.find('.topNav .item a').css({
+                    color: '#fff'
+                });
+                _this.d_topHeader.find('.topNav .item').eq(_this.s_index - 1).addClass(_this.s_active);
+                _this.d_topHeader.find('.topNav .item.' + _this.s_active + ' a').css({
+                    color: '#ccc'
+                });
 
             },
 
@@ -247,7 +263,9 @@
                     _this.s_index = $(this).index() + 1;
                     _this.scrollAnimate();
                     _this._setMenuActive();
-                })
+                });
+                // 鼠标滚动滚动条时触发的事件
+                $(window).on('scroll', _this._deBounce(_this._linkageScrolling, 500));
             },
 
             //滚到某一屏调用的回调函数
@@ -256,6 +274,26 @@
                 var index = this.s_index;
                 $.isFunction(_this.s_afterLoad) && _this.s_afterLoad.call(this, index + 1);
             },
+
+            /**
+             * 当浏览器滚动条滚动时,能知道滚动到哪个区域,这样可以设置菜单高亮和顶部菜单是否固定还是处于文档流
+             */
+            _linkageScrolling: function() {
+                var _this = this;
+                console.log($('body').scrollTop());
+            },
+
+            // 使用deBounce防抖来优化scroll事件的重复执行
+            _deBounce: function(func, wait, immediate) {
+                // 定时器变量
+                var timeout;
+                return function() {
+                    // 每次触发 scroll handler 时先清除定时器
+                    clearTimeout(timeout);
+                    // 指定 xx ms 后触发真正想进行的操作 handler
+                    timeout = setTimeout(func, wait);
+                };
+            }
         };
         return FullPageSlide;
     })();
