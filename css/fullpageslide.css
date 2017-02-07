@@ -18,15 +18,16 @@ a:hover {
   height: 100%;
 }
 .fullPageSlide .topHeader-fixed {
-  width: 100%;
+  width: 100%!important;
   height: 52px;
   line-height: 52px;
-  position: fixed;
+  position: fixed!important;
   top: 0;
   left: 0;
+  z-index: 100;
   padding-right: 160px;
   padding-left: 160px;
-  background-color: #717171;
+  background-color: rgba(113, 113, 113, 0.5);
   box-sizing: border-box;
 }
 .fullPageSlide .topHeader-fixed .author {
@@ -36,13 +37,13 @@ a:hover {
   float: right;
   font-size: 0;
 }
-.fullPageSlide .topHeader-fixed .topNav .item {
+.fullPageSlide .topHeader-fixed .topNav .menu-item {
   display: inline-block;
 }
-.fullPageSlide .topHeader-fixed .topNav .item > a {
+.fullPageSlide .topHeader-fixed .topNav .menu-item > a {
   display: inline-block;
 }
-.fullPageSlide .topHeader-fixed .topNav .item + .item {
+.fullPageSlide .topHeader-fixed .topNav .menu-item + .menu-item {
   margin-left: 20px;
 }
 .fullPageSlide .section {
@@ -80,7 +81,8 @@ a:hover {
   line-height: 52px;
   padding-right: 160px;
   padding-left: 160px;
-  background-color: #717171;
+  background-color: rgba(113, 113, 113, 0.5);
+  box-sizing: border-box;
 }
 .fullPageSlide .section-wrapper .topHeader .author {
   float: left;
@@ -89,19 +91,19 @@ a:hover {
   float: right;
   font-size: 0;
 }
-.fullPageSlide .section-wrapper .topHeader .topNav .item {
+.fullPageSlide .section-wrapper .topHeader .topNav .menu-item {
   display: inline-block;
 }
-.fullPageSlide .section-wrapper .topHeader .topNav .item > a {
+.fullPageSlide .section-wrapper .topHeader .topNav .menu-item > a {
   display: inline-block;
 }
-.fullPageSlide .section-wrapper .topHeader .topNav .item + .item {
+.fullPageSlide .section-wrapper .topHeader .topNav .menu-item + .menu-item {
   margin-left: 20px;
 }
 .fullPageSlide .topHeader-fixed {
   width: 100%;
-  position: fixed;
-  top: 0;
+  position: fixed!important;
+  top: 0!important;
   left: 0;
   box-sizing: border-box;
 }

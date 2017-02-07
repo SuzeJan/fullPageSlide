@@ -39,7 +39,6 @@
         }
         return false;
     })(document.createElement(FullPageSlide));
-    console.log(_prefix);
 
     var FullPageSlide = (function() {
         function FullPageSlide(element, options) {
@@ -86,6 +85,7 @@
                  */
                 this.b_tiggerSection = [];
                 this.b_finshed = true;
+                this.b_canScroll = true;
 
                 // 渲染导航条
                 this.renderNav();
@@ -99,13 +99,26 @@
                     } else {
                         this._initHorizLayout();
                     }
-                    this.scrollAnimate();
                 } else {
-                    $('html, body').css({
-                        height: $(window).height(),
-                        overflow: 'hidden'
-                    });
+                    // 这里写关于没有滚动条的代码
+                    if (this.s_direction) {
+                        this._initVertiLayout();
+                        $('html, body').css({
+                            // 初始化DOM设置
+                            height: $(window).height(),
+                            overflow: 'hidden'
+                        });
+                    } else {
+                        this._initHorizLayout();
+                        $('html, body').css({
+                            // 初始化DOM设置
+                            height: $(window).width(),
+                            overflow: 'hidden'
+                        });
+                    }
                 }
+
+                this.scrollAnimate();
 
                 // 初始化事件
                 this._initEvent();
@@ -113,6 +126,10 @@
                 this._afterScrolling();
 
                 this._setMenuActive();
+
+                _this._isReTopHeader();
+
+                _this._dynamicPageSize();
             },
             //其它功能
 
@@ -122,18 +139,29 @@
                 if (this.s_navMenu.length > 0) {
 
                     // 保存顶部导航菜单的DOM结构
-                    // 在第一个section后面追加DOM
-                    var topHeader = $('<header class="topHeader"><h1 class="author"><a href="#">' + this.s_author + '</a></h1><nav class="topNav"><ul></ul></nav></header>');
+                    var topHeader = $('<header class="topHeader"><h1 class="author menu-item"><a href="javascript:;">' + this.s_author + '</a></h1><nav class="topNav"><ul></ul></nav></header>');
                     this.d_sectionWrap.children().eq(0).after(topHeader);
 
                     // 保存topHeader 的DOM
                     this.d_topHeader = $('.topHeader');
 
+                    // 解决获取每屏top值,由于之前是文档流,获取到的top值会包含进去,最开始就fixed
+                    // 并且在有滚动条是才会出现这种情况
+                    if (_this.s_isScrolling) {
+                        this.d_topHeader.css({
+                            position: 'absolute',
+                            top: _this.d_section.eq(1).position().top - _this.d_topHeader.height(),
+                            left: 0,
+                            width: $(window).width(),
+                            boxSizing: 'border-box'
+                        });
+                    }
+
                     var ulList = $('.topHeader .topNav ul');
 
                     // 遍历用户传进来的菜单，渲染出菜单的DOM结构
                     $.each(_this.s_navMenu, function(index, data) {
-                        var liItem = $('<li class="item"><a href="#">' + data + '</a></li>');
+                        var liItem = $('<li class="menu-item"><a href="javascript:;">' + data + '</a></li>');
                         ulList.append(liItem);
                     });
                 }
@@ -146,37 +174,60 @@
                 } else if (this.s_isLoop) {
                     this.s_index = this._getSectionCount() - 1;
                 }
+                this._setMenuActive();
                 this.scrollAnimate();
             },
 
             // 下一屏
             nextSlide: function() {
-                if (this.s_index < this.pagesCount() - 1) {
+                if (this.s_index < this._getSectionCount() - 1) {
                     this.s_index++;
-                } else if (me.s_isLoop) {
+                } else if (this.s_isLoop) {
                     this.s_index = 0;
                 }
+                this._setMenuActive();
                 this.scrollAnimate();
             },
 
             // 滚屏动画
             scrollAnimate: function() {
                 var _this = this;
+                this._isReTopHeader();
+                this._dynamicPageSize();
                 // 获取当前屏的top和left值,用position()方法
                 var sectionPosition = this.d_section.eq(_this.s_index).position();
-                if (_prefix) {
-                    // 如果是在浏览器默认滚动条就用scrollTop和scrollLeft滚动滚动条的方式实现动画
-                    if (this.s_isScrolling) {
-                        _this.s_direction ? $('body').animate({
-                            scrollTop: sectionPosition.top
-                        }, 'slow') : $('body').animate({
-                            scrollLeft: sectionPosition.left
-                        }, 'slow');
+                // 如果是在浏览器默认滚动条就用scrollTop和scrollLeft滚动滚动条的方式实现动画
+                if (this.s_isScrolling && (_this.s_isScrolling && _this.s_direction)) {
+                    _this.s_direction ? $('body').animate({
+                        scrollTop: sectionPosition.top
+                    }, 'slow') : $('body').animate({
+                        scrollLeft: sectionPosition.left
+                    }, 'slow');
+                } else {
+                    // 如果是全屏滚动的方式,则用translate的css3来实现动画
+                    this.d_sectionWrap.find('.topHeader').remove();
+                    this.element.append(this.d_topHeader);
+                    this.d_topHeader.addClass('topHeader-fixed');
+                    if (!_this.s_index) {
+                        sectionPosition = 0;
                     } else {
-                        // 如果是全屏滚动的方式,则用translate的css3来实现动画
-                        var translate = _this.s_direction ? "translateY(-" + sectionPosition.top + "px)" : "translateX(-" + sectionPosition.left + "px)";
-                        _this.d_sectionWrap.css(_prefix + "transition", "all " + _this.s_duration + "ms " + _this.s_easing);
-                        _this.d_sectionWrap.css(_prefix + "transform", translate);
+                        _this.s_direction ? (sectionPosition = this.d_section.eq(_this.s_index).position().top - this.d_section.eq(0).position().top) : (sectionPosition = this.d_section.eq(_this.s_index).position().left - this.d_section.eq(0).position().left);
+                    }
+                    this.b_canScroll = false
+
+                    if (_prefix) {
+                        var translate = _this.s_direction ? "translateY(-" + sectionPosition + "px)" : "translateX(-" + sectionPosition + "px)";
+                        this.d_sectionWrap.css(_prefix + "transition", "all " + _this.s_duration + "ms " + _this.s_easing);
+                        this.d_sectionWrap.css(_prefix + "transform", translate);
+                    } else {
+                        var animateCss = this.s_direction ? {
+                            top: -sectionPosition.top
+                        } : {
+                            left: -sectionPosition.left
+                        };
+                        this.d_sectionWrap.animate(animateCss, _this.s_duration, function() {
+                            _this.b_canScroll = true;
+                        });
                     }
                 }
             },
@@ -184,12 +235,12 @@
             // 设置当前活动的菜单
             _setMenuActive: function() {
                 var _this = this;
-                _this.d_topHeader.find('.topNav .item').removeClass(_this.s_active);
-                _this.d_topHeader.find('.topNav .item a').css({
+                _this.d_topHeader.find('.menu-item').removeClass(_this.s_active);
+                _this.d_topHeader.find('.menu-item a').css({
                     color: '#fff'
                 });
-                _this.d_topHeader.find('.topNav .item').eq(_this.s_index - 1).addClass(_this.s_active);
-                _this.d_topHeader.find('.topNav .item.' + _this.s_active + ' a').css({
+                _this.d_topHeader.find('.menu-item').eq(_this.s_index).addClass(_this.s_active);
+                _this.d_topHeader.find('.menu-item.' + _this.s_active + ' a').css({
                     color: '#ccc'
                 });
 
@@ -227,14 +278,15 @@
                 // 得到section的数量*100,再换成百分值,e.g. 500%
                 var sectionWrapWidth = (_this._getSectionCount() * 100) + "%";
                 // 100/section的数量,四舍五入保存两位小数点,换成百分值,e.g. 20%
-                var sectionWidth = (100 / _this._getSectionCount()).toFixed(2) + "%";
+                // 这里测试到在除奇数时会有偏差导致渲染不下,导致布局换行,换成toFixed(4)
+                var sectionWidth = (100 / _this._getSectionCount()).toFixed(4) + "%";
 
                 _this.d_sectionWrap.width(sectionWrapWidth);
                 _this.d_section.width(sectionWidth).css({
                     'float': 'left'
                 });
+
                 // 为了让横屏布局后,总宽度变得很宽,这时顶部header在文档流会影响布局
-                console.log(sectionWidth);
                 this.d_sectionWrap.find('.topHeader').remove();
                 this.element.append(this.d_topHeader);
                 this.d_topHeader.addClass('topHeader-fixed');
@@ -256,31 +308,118 @@
                 var _this = this;
 
                 // 鼠标单击导航菜单,调用动画函数
-                this.d_sectionWrap.on('click', '.topNav li', function(e) {
-                    e.preventDefault();
-                    console.log(_this.d_topHeader);
-                    _this.d_sectionWrap.find('.topHeader').addClass('topHeader-fixed');
-                    _this.s_index = $(this).index() + 1;
-                    _this.scrollAnimate();
-                    _this._setMenuActive();
+                $('.topHeader .menu-item').each(function(i) {
+                    $(this).on('click', function() {
+                        _this.s_index = i;
+                        _this.scrollAnimate();
+                        _this._setMenuActive();
+                        return false;
+                    })
+                })
+
+                $(window).on('scroll', function() {
+                    _this._isReTopHeader();
                 });
-                // 鼠标滚动滚动条时触发的事件
-                $(window).on('scroll', _this._deBounce(_this._linkageScrolling, 500));
+                $(window).on('scroll', _this._deBounce(function() {
+                    _this._linkageScrolling();
+                }, 500));
+
+                /*支持CSS3动画的浏览器，绑定transitionend事件(即在动画结束后调用起回调函数)*/
+                if (_prefix) {
+                    _this.d_sectionWrap.on("transitionend webkitTransitionEnd oTransitionEnd otransitionend", function() {
+                        _this.b_canScroll = true;
+                    })
+                }
+
+                /*绑定鼠标滚轮事件*/
+                this.element.on("mousewheel DOMMouseScroll", function(e) {
+                    var delta = e.originalEvent.wheelDelta || -e.originalEvent.detail;
+                    if (_this.b_canScroll && (!_this.s_direction || !_this.s_isScrolling)) {
+                        if (delta < 0 && (_this.s_index < _this._getSectionCount()-1 && !_this.s_isLoop || _this.s_isLoop)) {
+                            console.log('down');
+                            _this.nextSlide();
+                        } else if (delta > 0 && (_this.s_index && !_this.s_isLoop || _this.s_isLoop)) {
+                            console.log('up');
+                            _this.prevSlide();
+                        }
+                    };
+                });
+
+
             },
 
             //滚到某一屏调用的回调函数
             _afterScrolling: function() {
                 var _this = this;
                 var index = this.s_index;
-                $.isFunction(_this.s_afterLoad) && _this.s_afterLoad.call(this, index + 1);
+                $.isFunction(_this.s_afterLoad) && _this.s_afterLoad.call(this, index);
             },
 
             /**
              * 当浏览器滚动条滚动时,能知道滚动到哪个区域,这样可以设置菜单高亮和顶部菜单是否固定还是处于文档流
              */
             _linkageScrolling: function() {
+                this.s_index = this._currentIndex();
+                this._isReTopHeader();
+                this._setMenuActive();
+            },
+
+            // 动态计算滚动是在哪个区间内
+            _currentIndex: function() {
                 var _this = this;
-                console.log($('body').scrollTop());
+                var index = _this.b_tiggerSection.length - 1;
+                var scrollSize = _this._dunamicScrollValue();
+                // 遍历每个section的宽度区间的值
+                $.each(_this.b_tiggerSection, function(i, data) {
+                    var size = _this.b_tiggerSection[i];
+                    var nextSize = _this.b_tiggerSection[i + 1];
+                    /**
+                     * 判断滚动条的top或者left是否在某个区间内,是则返回index值,就知道当前滚动在哪个屏
+                     */
+                    if (!nextSize || scrollSize >= size && scrollSize < nextSize) {
+                        index = i;
+                        return false;
+                    }
+                });
+                return index;
+            },
+
+            // 顶部菜单是否移出文档流
+            _isReTopHeader() {
+                if (this._dunamicScrollValue() > this.d_sectionWrap.children().eq(1).position().top && this.s_isScrolling) {
+                    this.d_sectionWrap.find('.topHeader').addClass('topHeader-fixed');
+                };
+                if (this._dunamicScrollValue() < this.d_section.eq(1).position().top && this.s_isScrolling) {
+                    this.d_sectionWrap.find('.topHeader').removeClass('topHeader-fixed');
+                }
+            },
+
+            // 动态计算window的滚动条的top或者left
+            _dunamicScrollValue: function() {
+                if (this.s_direction) {
+                    return $(window).scrollTop();
+                } else {
+                    return $(window).scrollLeft();
+                }
+            },
+
+            // 保存每个屏的top值或者left值,如果是竖屏则保存top值,如果是横屏则保存left值
+            _dynamicPageSize: function() {
+                var _this = this;
+                _this.b_tiggerSection = [];
+                /**
+                 * bug: 当头部菜单处于文档流时,也就是在第一屏,这是获取的包含topHeader的top值
+                 * 导致:从第一屏往下滚动时,会多滚出topHeader的高度那么多的位置
+                 * 处理:初始就给fixed固定在第二屏最上面
+                 */
+
+                $.each(_this.d_section, function(i, data) {
+                    if (_this.s_direction) {
+                        _this.b_tiggerSection.push(_this.d_section.eq(i).position().top);
+                    } else {
+                        _this.b_tiggerSection.push(_this.d_section.eq(i).position().left);
+                    }
+                });
             },
 
             // 使用deBounce防抖来优化scroll事件的重复执行
