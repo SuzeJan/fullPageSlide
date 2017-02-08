@@ -4,7 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <title>FullPage插件演示</title>
-    <link rel="stylesheet" type="text/css" href="./node_modules/reset.css/reset.css">
+    <!-- <link rel="stylesheet" type="text/css" href="./node_modules/reset.css/reset.css"> -->
+    <link rel="stylesheet" type="text/css" href="css/reset.css">
     <link rel="stylesheet" type="text/css" href="./css/fullpageslide.css">
 </head>
 
@@ -20,7 +21,8 @@
         </section>
     </section>
 
-    <script src="./node_modules/jquery/dist/jquery.min.js"></script>
+    <!-- <script src="./node_modules/jquery/dist/jquery.min.js"></script> -->
+    <script src="script/jq.js" charset="utf-8"></script>
     <script src="./script/fullpageslide.js"></script>
     <script>
         $('#J-fullPageSlide').FullPageSlide({
@@ -29,7 +31,7 @@
             isLoop: false,
             author: '张旭•个人简历',
             active: 'my-active',
-            direction: 'vertical',
+            direction: 'horizontal',
             index: 0,
             duration: 600,
             easing: 'ease',

@@ -71,6 +71,7 @@
                 this.s_isLoop = this.setting.isLoop;
                 this.s_duration = this.setting.duration;
                 this.s_easing = this.setting.easing;
+                this.s_isKeyboard = this.setting.isKeyboard;
                 this.s_afterLoad = this.setting.afterLoad;
                 this.s_onLeave = this.setting.onLeave;
 
@@ -200,9 +201,9 @@
                 if (this.s_isScrolling && (_this.s_isScrolling && _this.s_direction)) {
                     _this.s_direction ? $('body').animate({
                         scrollTop: sectionPosition.top
-                    }, 'slow') : $('body').animate({
+                    },  _this.s_duration) : $('body').animate({
                         scrollLeft: sectionPosition.left
-                    }, 'slow');
+                    },  _this.s_duration);
                 } else {
                     // 如果是全屏滚动的方式,则用translate的css3来实现动画
                     this.d_sectionWrap.find('.topHeader').remove();
@@ -324,27 +325,36 @@
                     _this._linkageScrolling();
                 }, 500));
 
+                /*绑定鼠标滚轮事件*/
+                this.element.on("mousewheel DOMMouseScroll", function(e) {
+                    var delta = e.originalEvent.wheelDelta || -e.originalEvent.detail;
+                    if (_this.b_canScroll && (!_this.s_direction || !_this.s_isScrolling)) {
+                        if (delta < 0 && (_this.s_index < _this._getSectionCount()-1 && !_this.s_isLoop || _this.s_isLoop)) {
+                            _this.nextSlide();
+                        } else if (delta > 0 && (_this.s_index && !_this.s_isLoop || _this.s_isLoop)) {
+                            _this.prevSlide();
+                        }
+                    };
+                });
+
+                // 键盘事件
+                if (this.s_isKeyboard && !this.s_isScrolling) {
+                    $(window).keydown(function(e) {
+                        var keyCode = e.keyCode;
+                        if (keyCode == 37 || keyCode == 38) {
+                            _this.prevSlide();
+                        } else if (keyCode == 39 || keyCode == 40) {
+                            _this.nextSlide()
+                        }
+                    });
+                }
+
                 /*支持CSS3动画的浏览器，绑定transitionend事件(即在动画结束后调用起回调函数)*/
                 if (_prefix) {
                     _this.d_sectionWrap.on("transitionend webkitTransitionEnd oTransitionEnd otransitionend", function() {
                         _this.b_canScroll = true;
                     })
                 }
-
-                /*绑定鼠标滚轮事件*/
-                this.element.on("mousewheel DOMMouseScroll", function(e) {
-                    var delta = e.originalEvent.wheelDelta || -e.originalEvent.detail;
-                    if (_this.b_canScroll && (!_this.s_direction || !_this.s_isScrolling)) {
-                        if (delta < 0 && (_this.s_index < _this._getSectionCount()-1 && !_this.s_isLoop || _this.s_isLoop)) {
-                            console.log('down');
-                            _this.nextSlide();
-                        } else if (delta > 0 && (_this.s_index && !_this.s_isLoop || _this.s_isLoop)) {
-                            console.log('up');
-                            _this.prevSlide();
-                        }
-                    };
-                });
-
 
             },
 
