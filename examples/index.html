@@ -4,9 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <title>FullPage插件演示</title>
-    <link rel="stylesheet" type="text/css" href="./node_modules/reset.css/reset.css">
+    <link rel="stylesheet" type="text/css" href="../node_modules/reset.css/reset.css">
     <!-- <link rel="stylesheet" type="text/css" href="css/reset.css"> -->
-    <link rel="stylesheet" type="text/css" href="./css/fullpageslide.css">
+    <link rel="stylesheet" type="text/css" href="../css/fullpageslide.css">
 </head>
 
 <body>
@@ -21,18 +21,18 @@
         </section>
     </section>
 
-    <script src="./node_modules/jquery/dist/jquery.min.js"></script>
+    <script src="../node_modules/jquery/dist/jquery.min.js"></script>
     <!-- <script src="script/jq.js" charset="utf-8"></script> -->
-    <script src="./script/fullpageslide.js"></script>
+    <script src="../script/fullpageslide.js"></script>
     <script>
         $('#J-fullPageSlide').FullPageSlide({
             navMenu: ['个人简历', '专业技能', '工作经历', '项目经验', '联系方式'],
-            sectionColor:  ['RGB(224,128,49)','RGB(199,206,178)','RGB(25,148,117)','RGB(11,110,72)','RGB(4,77,34)'],
-            isScrolling: false,
+            // sectionColor:  ['RGB(224,128,49)','RGB(199,206,178)','RGB(25,148,117)','RGB(11,110,72)','RGB(4,77,34)'],
+            isScrolling: true,
             isLoop: true,
             author: '张旭•个人简历',
             active: 'my-active',
-            direction: 'horizontal',
+            direction: 'vertical',
             index: 0,
             duration: 600,
             easing: 'ease',
